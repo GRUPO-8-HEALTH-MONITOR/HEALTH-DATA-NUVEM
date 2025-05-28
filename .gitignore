@@ -1,0 +1,10 @@
+key-pair-health-data.pem
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfplan
