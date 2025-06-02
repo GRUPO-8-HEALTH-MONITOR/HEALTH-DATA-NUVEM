@@ -13,3 +13,12 @@ module "ec2" {
 module "s3" {
   source      = "./modules/s3"
 }
+
+module "lambda_function" {
+  source = "./modules/lambda"
+
+  function_name = "example_lambda"
+  handler       = "index.handler"
+  runtime       = "python3.11"
+  filename      = "${path.module}/modules/lambda/lambda.zip"
+}
