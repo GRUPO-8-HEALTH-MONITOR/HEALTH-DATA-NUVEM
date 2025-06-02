@@ -13,3 +13,11 @@ variable "runtime" {
 variable "filename" {
   type = string
 }
+
+variable "existing_role_arn" {
+  type = string
+}
+
+variable "raw_bucket_name" {
+  type = string
+}
