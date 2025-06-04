@@ -23,7 +23,7 @@ module "lambda_function" {
   runtime           = "python3.11"
   filename          = "${path.module}/modules/lambda/lambda.zip"
   existing_role_arn = "arn:aws:iam::654654300188:role/LabRole"
-  raw_bucket_name   = var.bucket_names[0]
+  raw_bucket_name   = module.s3.s3_raw_name
 }
 
 module "api_gateway" {

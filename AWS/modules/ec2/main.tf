@@ -21,12 +21,12 @@ resource "aws_instance" "ec2_micro" {
   ami                         = var.ami_id
   instance_type               = "t2.micro"
   subnet_id                   = var.subnet_id
-  key_name                    = "key-pair-health-data"  # Assign SSH Key
-  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]  # Attach Security Group
+  key_name                    = "key-pair-health-data"
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
 
   root_block_device {
-    volume_size = var.volume_size  # 3GB of storage
+    volume_size = var.volume_size
   }
 
   tags = {
