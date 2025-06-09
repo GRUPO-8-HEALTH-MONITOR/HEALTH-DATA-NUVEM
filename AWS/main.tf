@@ -22,7 +22,7 @@ module "lambda_function" {
   handler           = "python_function.handler"
   runtime           = "python3.11"
   filename          = "${path.module}/modules/lambda/lambda.zip"
-  existing_role_arn = "arn:aws:iam::654654300188:role/LabRole"
+  existing_role_arn = var.lambda_role_arn
   raw_bucket_name   = module.s3.s3_raw_name
 }
 

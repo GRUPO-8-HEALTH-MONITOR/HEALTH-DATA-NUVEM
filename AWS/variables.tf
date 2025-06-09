@@ -3,3 +3,9 @@ variable "bucket_names" {
   type        = list(string)
   default = [ "raw", "trusted", "client" ]
 }
+
+variable "lambda_role_arn" {
+  description = "ARN of the IAM role for Lambda function"
+  type        = string
+  default     = ""
+}
