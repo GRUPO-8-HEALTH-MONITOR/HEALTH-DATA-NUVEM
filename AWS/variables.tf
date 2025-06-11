@@ -7,5 +7,5 @@ variable "bucket_names" {
 variable "lambda_role_arn" {
   description = "ARN of the IAM role for Lambda function"
   type        = string
-  default     = ""
+  default     = "arn:aws:iam::654654300188:role/LabRole"
 }
