@@ -1,19 +1,36 @@
-variable "iot_hub_name" {
-  description = "The name of the IoT Hub"
-  type        = string
-}
-
 variable "resource_group_name" {
-  description = "Name of the resource group"
-  type        = string
+  type = string
 }
 
 variable "location" {
-  description = "Azure region for the IoT Hub"
-  type        = string
+  type = string
+}
+
+variable "iot_hub_name" {
+  type = string
 }
 
 variable "sku_name" {
-  description = "SKU name for the IoT Hub"
+  type    = string
+  default = "S1"
+}
+
+variable "sku_capacity" {
+  type    = number
+  default = 1
+}
+
+variable "consumer_group_name" {
+  type    = string
+  default = "my-stream-consumer"
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
+variable "iot_device_name" {
+  description = "Name of the IoT Hub device."
   type        = string
 }

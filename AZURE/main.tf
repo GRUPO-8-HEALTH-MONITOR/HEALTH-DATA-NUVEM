@@ -1,56 +1,105 @@
 provider "azurerm" {
   features {}
+
+  subscription_id = var.subscription_id
 }
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "iot_rg" {
   name     = var.resource_group_name
   location = var.location
 }
 
-module "logic_app" {
-  source              = "./modules/logic-apps"
-  logic_app_name      = var.logic_app_name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
 module "iot_hub" {
   source              = "./modules/iot-hub"
-  iot_hub_name        = var.iot_hub_name
+  resource_group_name = azurerm_resource_group.iot_rg.name
   location            = var.location
-  resource_group_name = azurerm_resource_group.rg.name
-  sku_name            = var.iot_hub_sku
+  iot_hub_name        = var.iot_hub_name
+  consumer_group_name = var.consumer_group_name
+  tags                = var.tags
+  iot_device_name     = var.iot_device_name
 }
 
 module "stream_analytics_cold" {
-  source = "./modules/stream-analytics-cold"
+  source              = "./modules/stream-analytics-cold"
+  job_name            = var.stream_analytics_job_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.iot_rg.name
+  streaming_units     = var.streaming_units
 
-  job_name              = "iot-cold-job"
-  resource_group_name   = module.resource_group.name
-  location              = var.location
+  iot_hub_namespace   = module.iot_hub.iot_hub_name
+  iot_hub_policy_name = var.iot_hub_policy_name
+  iot_hub_policy_key  = var.iot_hub_policy_key
+  consumer_group_name = var.consumer_group_name
 
-  iot_hub_namespace     = module.iot_hub.hostname
-  iot_hub_key           = var.iot_hub_key
-  consumer_group        = module.iot_hub.consumer_groups[1]
+  servicebus_namespace = var.servicebus_namespace_name
+  sb_policy_name       = var.sb_policy_name
+  sb_policy_key        = var.sb_policy_key
+  sb_queue_name        = var.sb_queue_name
 
-  storage_account_name  = module.storage.account_name
-  storage_account_key   = var.storage_account_key
-  container_name        = module.storage.container_name
+  tags = var.tags
+  iot_device_name     = var.iot_device_name
+}
+
+module "servicebus" {
+  source                    = "./modules/service-bus"
+  resource_group_name       = azurerm_resource_group.iot_rg.name
+  location                  = var.location
+  servicebus_namespace_name = var.servicebus_namespace_name
+  sb_queue_name             = var.sb_queue_name
+}
+
+module "logic_app" {
+  source                    = "./modules/logic-apps/logic-app-cold"
+  resource_group_name       = azurerm_resource_group.iot_rg.name
+  location                  = var.location
+  logic_app_name            = "logic-app-cold"
+  sb_queue_name             = var.sb_queue_name
+  servicebus_namespace_name = var.servicebus_namespace_name
 }
 
 
-module "stream_analytics_storage" {
-  source = "./modules/stream-analytics-to-storage"
 
-  job_name              = var.stream_analytics_job_name[1]
-  resource_group_name   = module.resource_group.name
+//HOT PATH -------------------------------------------------------------------------
+
+
+module "stream_analytics_hot" {
+  source              = "./modules/stream-analytics-hot"
+  job_name            = var.stream_analytics_hot_job_name
+  location            = var.location
+  resource_group_name = azurerm_resource_group.iot_rg.name
+  streaming_units     = var.streaming_units
+
+  iot_hub_namespace     = module.iot_hub.iot_hub_name
+  iot_hub_policy_name   = var.iot_hub_policy_name
+  iot_hub_policy_key    = var.iot_hub_policy_key
+  consumer_group_name   = var.consumer_group_name
+
+  servicebus_namespace  = var.servicebus_namespace_name
+  sb_policy_name        = var.sb_policy_name
+  sb_policy_key         = var.sb_policy_key
+  sb_queue_name         = var.sb_queue_name
+  iot_device_name       = var.iot_device_name
+
+  tags = var.tags
+}
+
+
+
+module "storage_account" {
+  source                = "./modules/storage-account"
+  storage_account_name  = var.storage_account_name
+  container_name        = var.container_name
+  resource_group_name   = azurerm_resource_group.iot_rg.name
   location              = var.location
+  tags                  = var.tags
+}
 
-  iot_hub_namespace     = module.iot_hub.hostname
-  iot_hub_key           = var.iot_hub_key
-  consumer_group        = module.iot_hub.consumer_groups[1]
+module "logic_app_hot" {
+  source              = "./modules/logic-apps/logic-app-hot"
+  logic_app_name      = "logic-app-hot"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.iot_rg.name
+  tags                = var.tags
 
-  storage_account_name  = module.storage.account_name
-  storage_account_key   = var.storage_account_key
-  container_name        = module.storage.container_name
+  logic_app_definition = local.logic_app_cold_definition
 }

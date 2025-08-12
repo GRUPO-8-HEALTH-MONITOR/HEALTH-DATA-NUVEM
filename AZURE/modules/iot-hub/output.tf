@@ -1,14 +1,11 @@
-output "iot_hub_id" {
-  value = azurerm_iothub.this.id
-}
-
 output "iot_hub_hostname" {
-  value = azurerm_iothub.this.hostname
+  value = azurerm_iothub.iot_hub.hostname
 }
 
-output "consumer_groups" {
-  value = [
-    azurerm_iothub_consumer_group.streamanalytics1.name,
-    azurerm_iothub_consumer_group.streamanalytics2.name
-  ]
+output "iot_hub_eventhub_endpoint" {
+  value = azurerm_iothub.iot_hub.event_hub_events_endpoint
+}
+
+output "iot_hub_name" {
+  value = azurerm_iothub.iot_hub.name
 }

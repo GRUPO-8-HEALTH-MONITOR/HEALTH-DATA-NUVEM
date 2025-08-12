@@ -1,53 +1,119 @@
-variable "resource_group_name" {
-  description = "The name of the Azure Resource Group"
+variable "subscription_id" {
+  description = "ID da assinatura do Azure"
   type        = string
-  default     = "logicapp-rg"
+  default = "f790fdf6-7eb3-4024-b412-4b3549f9de87"
+}
+
+variable "resource_group_name" {
+  description = "Nome do Resource Group"
+  type        = string
+  default     = "iot-hub-rg-health-data-G8"
 }
 
 variable "location" {
-  description = "Azure region to deploy resources"
+  description = "Localização do Resource Group"
   type        = string
   default     = "East US"
 }
 
-variable "logic_app_name" {
-  description = "Name of the Logic App"
-  type        = string
-  default     = "scheduled-http-sender"
-}
-
 variable "iot_hub_name" {
-  description = "Name of the IoT Hub"
+  description = "Nome do IoT Hub"
   type        = string
-  default     = "my-iot-hub"
+  default     = "iot-hub-health-data-G8"
 }
 
-variable "iot_hub_sku" {
-  description = "SKU for the IoT Hub (F1, B1, S1, etc.)"
+variable "consumer_group_name" {
+  description = "Nome do Consumer Group do IoT Hub"
   type        = string
-  default     = "F1"
+  default     = "stream-consumer-health-data-G8"
 }
+
+variable "iot_device_name" {
+  description = "Name of the IoT Hub device."
+  type        = string
+  default     = "device001"
+}
+
 
 variable "stream_analytics_job_name" {
-  description = "Name of the Stream Analytics Job"
-  type        = list(string)
-  default     = ["stream-analytics-job-1", "stream-analytics-job-2"]
+  description = "Nome do Stream Analytics Job"
+  type        = string
+  default     = "stream-cold-job-health-data-G8"
 }
 
-variable "iot_hub_key" {
-  description = "Access key for the IoT Hub (used in both stream analytics modules)"
-  type        = string
-  sensitive   = true
+variable "streaming_units" {
+  description = "Número de unidades de streaming"
+  type        = number
+  default     = 1
 }
 
-variable "service_bus_key" {
-  description = "Access key for the Service Bus"
+variable "iot_hub_policy_name" {
+  description = "Nome da política do IoT Hub"
   type        = string
-  sensitive   = true
+  default     = "iothubowner"
 }
 
-variable "storage_account_key" {
-  description = "Access key for the Storage Account"
+variable "iot_hub_policy_key" {
+  description = "Chave da política do IoT Hub"
   type        = string
-  sensitive   = true
+}
+
+variable "servicebus_namespace_name" {
+  description = "Nome do Service Bus Namespace"
+  type        = string
+  default     = "service-bus-health-data-G8"
+}
+
+variable "sb_policy_name" {
+  description = "Nome da política do Service Bus"
+  type        = string
+  default     = "RootManageSharedAccessKey"
+}
+
+variable "sb_policy_key" {
+  description = "Chave da política do Service Bus"
+  type        = string
+}
+
+variable "sb_queue_name" {
+  description = "Nome da fila do Service Bus"
+  type        = string
+  default     = "fila-health-data-G8"
+}
+
+variable "tags" {
+  description = "Tags padrão para os recursos"
+  type        = map(string)
+  default = {
+    environment = "dev"
+  }
+}
+
+//HOT PATH -------------------------------------------------------------------------
+
+// STREAM ANALYTICS HOT PATH
+
+variable "stream_analytics_hot_job_name" {
+  description = "Nome do Stream Analytics Job para o caminho quente"
+  type        = string
+  default     = "stream-hot-job-health-data-g8"
+}
+
+// ACCOUNT STORAGE COLD PATH
+
+variable "storage_account_name" {
+  description = "Storage Account for hoy path output"
+  type        = string
+  default     = "storageaccountg8"
+}
+
+variable "container_name" {
+  description = "Blob container name for hot data"
+  type        = string
+  default     = "hot-data"
+}
+
+variable "aws_api_gateway_url" {
+  description = "The AWS API Gateway endpoint to send data to"
+  type        = string
 }
